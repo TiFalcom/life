@@ -1,45 +1,45 @@
-from tkinter import W
 import pygame
-import random
 from time import sleep
 from world import World
+from yaml import safe_load
+from helper import plot_fitness
+
+
+# setup variables
+setup_vars = safe_load(open('config.yml', 'r'))
+locals().update(setup_vars)
 
 # Inicializa o Pygame
 pygame.init()
-
-# Define as dimensões da tela
-screen_width = 800
-screen_height = 600
-screen = pygame.display.set_mode((screen_width, screen_height))
+screen = pygame.display.set_mode((WORLD_WIDTH, WORLD_HEIGHT))
 pygame.display.set_caption("Simulação de Indivíduos")
 
 # Define as cores
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
-
-# Classe para representar um indivíduo
-
-X_INIT = 100
-Y_INIT = 100
+GRASS = (153, 255, 102)
 
 # Loop principal
 running = True
-world = World(screen_height, screen_width, 1000)
+world = World(WORLD_WIDTH, WORLD_HEIGHT, 
+              INITIAL_POPULATION_SIZE, QTY_LAKES, QTY_BUSHES, 
+              MORTALITY_RATE)
 world.build()
-i = 1
+
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
     # Preenche a tela com branco
-    screen.fill(WHITE)
+    screen.fill(GRASS)
     world.draw(screen)
     
     # Atualiza a tela
     pygame.display.flip()
     world.update()
-    sleep(0.1)
+    plot_fitness(world._calculate_fitness())
+    #sleep(UPDATE_SLEEP)
 
 
 # Finaliza o Pygame
